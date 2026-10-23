@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --accent-primary: #6c63ff;
+  --accent-secondary: #4ecdc4;
+  --accent-gradient: linear-gradient(135deg, #6c63ff 0%, #4ecdc4 100%);
+  --text-primary: #f0f0ff;
+  --text-secondary: #8b8ba8;
+  --text-muted: #555570;
+  --success: #4caf82;
+  --error: #ff5c6c;
+  --shadow-glow: 0 0 40px rgba(108, 99, 255, 0.15);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ─── App Container ──────────────────────────────── */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(108, 99, 255, 0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(78, 205, 196, 0.08), transparent),
+    var(--bg-primary);
+}
+
+/* ─── Hero ───────────────────────────────────────── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  animation: fadeInUp 0.6s ease both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ─── Logo ───────────────────────────────────────── */
+.logo-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow-glow), 0 8px 32px rgba(0,0,0,0.3);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: var(--shadow-glow), 0 8px 32px rgba(0,0,0,0.3); }
+  50%       { box-shadow: 0 0 60px rgba(108, 99, 255, 0.3), 0 8px 32px rgba(0,0,0,0.3); }
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  color: #fff;
+}
+
+/* ─── Titles ─────────────────────────────────────── */
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
+  line-height: 1.1;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ─── Status Cards ───────────────────────────────── */
+.status-cards {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.status-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  backdrop-filter: blur(12px);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.status-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: blink 2s ease-in-out infinite;
+}
+
+.status-dot.offline {
+  background: var(--error);
+  box-shadow: 0 0 8px var(--error);
+}
+
+.status-dot.checking {
+  background: #f0a500;
+  box-shadow: 0 0 8px #f0a500;
+  animation: blink 0.8s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.status-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.status-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ─── Coming Soon ────────────────────────────────── */
+.coming-soon {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(78, 205, 196, 0.08));
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  width: 100%;
+}
+
+.coming-soon p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 2.2rem; }
+  .status-cards { flex-direction: column; }
+}
