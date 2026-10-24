@@ -38,8 +38,11 @@ export function parseAccessToken(token: string): AccessTokenPayload | null {
 }
 
 export function userFromAccessToken(token: string): User | null {
+  if (!token || typeof token !== 'string') {
+    return null;
+  }
   const payload = parseAccessToken(token);
-  if (!payload) {
+  if (!payload || !payload.email) {
     return null;
   }
   const nameFromEmail = payload.email.split('@')[0] ?? payload.email;
