@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useUrls } from '../hooks/useUrls';
 import { CreateUrlForm } from '../components/urls/CreateUrlForm';
@@ -8,21 +8,11 @@ import { GoogleSignInButton } from '../components/auth/GoogleSignInButton';
 
 export function HomePage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { user, isAuthenticated, loading: authLoading, completeOAuthLogin, logout } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, logout } = useAuth();
   const { urls, loading, error, success, fetchUrls, createUrl, total, page, limit, totalPages, setPage, setSearch, clearMessages } = useUrls();
   const pollIntervalRef = useRef<number | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const searchTimeoutRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const token = searchParams.get('token');
-    const refresh = searchParams.get('refresh');
-    if (token && refresh) {
-      completeOAuthLogin(token, refresh);
-      window.history.replaceState({}, '', '/');
-    }
-  }, [searchParams, completeOAuthLogin]);
 
   useEffect(() => {
     if (isAuthenticated) {
