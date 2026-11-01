@@ -2,6 +2,12 @@ import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { ACCESS_TOKEN_STORAGE_KEY, REFRESH_TOKEN_STORAGE_KEY } from '../constants/storage.keys';
 import { env } from '../config/env';
 import { refreshTokens } from './auth.service';
+import { APP_ROUTES } from '../constants/app-routes';
+
+/** Extend InternalAxiosRequestConfig to track retry attempts */
+interface RetriableRequest extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 const api = axios.create({
   baseURL: env.apiBaseUrl,
@@ -26,18 +32,39 @@ function attachAuthHeader(config: InternalAxiosRequestConfig): InternalAxiosRequ
   return config;
 }
 
+function redirectToLogin(): void {
+  const path = window.location.pathname;
+  if (path !== APP_ROUTES.LOGIN && path !== APP_ROUTES.REGISTER) {
+    window.location.assign(APP_ROUTES.LOGIN);
+  }
+}
+
 api.interceptors.request.use(attachAuthHeader);
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: unknown) => {
+    // ── Non-Axios errors — wrap and reject safely ─────────────────────────────
+    if (!axios.isAxiosError(error)) {
+      return Promise.reject(
+        error instanceof Error ? error : new Error('API request failed'),
+      );
+    }
 
-    if (axios.isAxiosError(error) && error.response?.status === 401 && !originalRequest._retry) {
+    const originalRequest = error.config as RetriableRequest | undefined;
+
+    // ── 401 handling — attempt token refresh ──────────────────────────────────
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
       if (isRefreshing) {
         return new Promise((resolve) => {
           failedQueue.push((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
             resolve(api(originalRequest));
           });
         });
@@ -54,36 +81,31 @@ api.interceptors.response.use(
           localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, access_token);
           localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, refresh_token);
           processQueue(access_token);
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          }
           return api(originalRequest);
         } catch (refreshError) {
           processQueue(null);
           localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
           localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-          const path = window.location.pathname;
-          if (path !== '/login' && path !== '/register') {
-            window.location.assign('/login');
-          }
-          return Promise.reject(refreshError);
+          redirectToLogin();
+          // Safely wrap unknown catch value before rejecting
+          return Promise.reject(
+            refreshError instanceof Error ? refreshError : new Error('Session expired'),
+          );
         } finally {
           isRefreshing = false;
         }
       } else {
         localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
         localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-        const path = window.location.pathname;
-        if (path !== '/login' && path !== '/register') {
-          window.location.assign('/login');
-        }
+        redirectToLogin();
       }
     }
 
-    if (axios.isAxiosError(error)) {
-      return Promise.reject(error);
-    }
-    return Promise.reject(
-      error instanceof Error ? error : new Error('API request failed'),
-    );
+    // ── All other Axios errors — AxiosError is typed, safe to reject ──────────
+    return Promise.reject(error);
   },
 );
 

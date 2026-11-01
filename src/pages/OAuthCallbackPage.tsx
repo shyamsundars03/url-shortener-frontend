@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { APP_ROUTES } from '../constants/app-routes';
 
 export function OAuthCallbackPage() {
   const [searchParams] = useSearchParams();
@@ -14,12 +15,12 @@ export function OAuthCallbackPage() {
     if (token && refresh) {
       try {
         completeOAuthLogin(token, refresh);
-        void navigate('/', { replace: true });
+        void navigate(APP_ROUTES.HOME, { replace: true });
       } catch {
-        void navigate('/login?error=oauth_failed', { replace: true });
+        void navigate(`${APP_ROUTES.LOGIN}?error=oauth_failed`, { replace: true });
       }
     } else {
-      void navigate('/login?error=oauth_failed', { replace: true });
+      void navigate(`${APP_ROUTES.LOGIN}?error=oauth_failed`, { replace: true });
     }
   }, [searchParams, completeOAuthLogin, navigate]);
 

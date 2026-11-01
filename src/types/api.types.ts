@@ -6,9 +6,14 @@ export interface ErrorResponse {
   path?: string;
 }
 
-/** Successful API payloads (errors are thrown, not returned). */
-export type ApiResponse<T> = T;
+/** Matches the backend ApiResponse<T> wrapper: { success, message, data } */
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
 
 export interface MessageResponse {
   message: string;
 }
+

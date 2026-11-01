@@ -6,17 +6,18 @@ import { RegisterPage } from './pages/RegisterPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { OAuthCallbackPage } from './pages/OAuthCallbackPage';
 import { ToastProvider } from './contexts/ToastContext';
+import { APP_ROUTES } from './constants/app-routes';
 
 function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/callback" element={<OAuthCallbackPage />} />
-          <Route path="/404" element={<NotFoundPage />} />
+          <Route path={APP_ROUTES.HOME} element={<HomePage />} />
+          <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
+          <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={APP_ROUTES.AUTH_CALLBACK} element={<OAuthCallbackPage />} />
+          <Route path={APP_ROUTES.NOT_FOUND} element={<NotFoundPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>

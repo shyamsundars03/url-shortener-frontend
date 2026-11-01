@@ -5,6 +5,7 @@ import { useUrls } from '../hooks/useUrls';
 import { CreateUrlForm } from '../components/urls/CreateUrlForm';
 import { UrlList } from '../components/urls/UrlList';
 import { GoogleSignInButton } from '../components/auth/GoogleSignInButton';
+import { APP_ROUTES } from '../constants/app-routes';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export function HomePage() {
 
   async function handleLogout() {
     await logout();
-    void navigate('/login');
+    void navigate(APP_ROUTES.LOGIN);
   }
 
   if (authLoading) {
@@ -66,10 +67,10 @@ export function HomePage() {
           <p className="hero-subtitle">Shorten your URLs with ease</p>
 
           <div className="page-actions">
-            <Link to="/register" className="btn btn-primary">
+            <Link to={APP_ROUTES.REGISTER} className="btn btn-primary">
               Register
             </Link>
-            <Link to="/login" className="btn btn-secondary">
+            <Link to={APP_ROUTES.LOGIN} className="btn btn-secondary">
               Login
             </Link>
           </div>
